@@ -1,55 +1,64 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest) {
   try {
-      const { artistId } = req.query;
+    const url = new URL(req.url);
+    const artistId = url.searchParams.get('artistId');
 
-      if (!artistId || typeof artistId !== 'string') {
-        return res.status(400).json({ error: 'Artist ID is required' });
-      }
+    if (!artistId) {
+      return NextResponse.json({ error: 'Artist ID is required' }, { status: 400 });
+    }
 
-      const url = 'https://accounts.spotify.com/api/token';
+    const tokenUrl = 'https://accounts.spotify.com/api/token';
+    const artistUrl = `https://api.spotify.com/v1/artists/${artistId}`;
 
-      const clientId = process.env.SPOTIFY_CLIENT_ID!;
-      const clientSecret = process.env.SPOTIFY_CLIENT_SECRET!;
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
-      const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    if (!clientId || !clientSecret) {
+      return NextResponse.json({ error: 'Spotify credentials are not set.' }, { status: 500 });
+    }
 
-      const tokenRes = await fetch(url, {
-          method: 'POST',
-          headers: {
-            Authorization: `Basic ${credentials}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            grant_type: 'client_credentials',
-          }),
-        });
+    const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
-        if (!tokenRes.ok) {
-          return res.status(500).json({ error: 'Failed to get access token' });
-        }
+    // Request access token from Spotify
+    const tokenRes = await fetch(tokenUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'client_credentials',
+      }),
+    });
 
-        const tokenData = await tokenRes.json();
-        const accessToken = tokenData.access_token;
+    if (!tokenRes.ok) {
+      console.error('Failed to obtain access token:', await tokenRes.text());
+      return NextResponse.json({ error: 'Failed to get access token' }, { status: 500 });
+    }
 
-        const artistUrl = `https://api.spotify.com/v1/artists/${artistId}`;
-        const artistResponse = await fetch(artistUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+    const tokenData = await tokenRes.json();
+    const accessToken = tokenData.access_token;
 
-        if (!artistResponse.ok) {
-          return res.status(500).json({ error: 'Failed to fetch artist data' });
-        }
+    // Request artist data from Spotify
+    const artistRes = await fetch(artistUrl, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
-        const artistData = await artistResponse.json();
-        return res.status(200).json(artistData);
+    if (!artistRes.ok) {
+      console.error('Failed to fetch artist data:', await artistRes.text());
+      return NextResponse.json({ error: 'Failed to fetch artist data' }, { status: 500 });
+    }
+
+    const artistData = await artistRes.json();
+
+    // Return artist data as JSON
+    return NextResponse.json(artistData, { status: 200 });
+  } catch (error) {
+    console.error('Error in GET /api/spotify/artist:', error);
+    return NextResponse.json({ error: 'Something went wrong during the request.' }, { status: 500 });
   }
-
-  catch {
-      return res.status(500).json({ error: 'Something went wrong during request.' });
-  }
-
 }
