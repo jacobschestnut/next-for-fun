@@ -21,9 +21,7 @@ export default function Search({ placeholder, onSearch }: SearchProps ) {
           handleSearch(e.target.value);
         }}
       />
-      <button className={styles.button}>
-        -
-      </button>
+      <p>clear</p>
     </div>
   );
 }

@@ -9,12 +9,12 @@ export default function Header() {
 
     return (
         <header className={styles.header}>
-            <h1>Logo</h1>
-            <nav>
+            <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_White.png" alt="spotify_logo_white"  width={100} height={100}/>
+            {/* <nav>
                 <Link className={`link ${pathname === '/' ? 'active' : ''}`} href="/">
                     Home
                 </Link>
-            </nav>
+            </nav> */}
         </header>
     ) 
 }

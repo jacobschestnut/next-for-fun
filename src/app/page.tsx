@@ -5,6 +5,7 @@ import styles from './page.module.css';
 import { Artist } from './types/artist-types'; 
 import { ArtistCard } from './components/artist-card/artist-card';
 import Search from './ui/search/bar/search';
+import Results from './ui/search/results/results';
 
 export default function Home() {
   const [artist, setArtist] = useState<Artist | null>(null);
@@ -14,7 +15,6 @@ export default function Home() {
 
   const handleSearch = (term: string) => {
     setSearchContent(term);
-    console.log(term);
   };
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Home() {
         const response = await fetch(`/api/spotify/artist/name?searchTerm=${searchContent}`)
 
         const data = await response.json();
-        if (data.artists.items.length > 0) {
+        if (data.artists != null) {
           setSearchResults((data.artists.items));
         }
       } catch (error) {
@@ -61,20 +61,7 @@ export default function Home() {
     <div className={styles.page}>
       <div>
         <Search placeholder='Search for an artist...' onSearch={handleSearch}/>
-        {searchResults.length > 0 && searchContent.length > 0 && (
-          <ul>
-            {searchResults.map((result) => (
-              <li key={result.id} className={styles.resultItem}>
-                {result.images && result.images.length > 0 ? (
-                  <img src={result.images[0].url} alt={result.name} width={50} height={50} />
-                ) : (
-                  <div className={styles.placeholder}>No Image</div>
-                )}
-                <strong>{result.name}</strong>
-              </li>
-            ))}
-          </ul>
-        )}
+        <Results searchContent={searchContent} searchResults={searchResults}/>
       </div>
       {/* <ArtistCard artist={artist}/> */}
     </div>
