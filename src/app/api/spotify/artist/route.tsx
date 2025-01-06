@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (!tokenRes.ok) {
-      console.error('Failed to obtain access token:', await tokenRes.text());
+      console.error('Failed to obtain access token:');
       return NextResponse.json({ error: 'Failed to get access token' }, { status: 500 });
     }
 

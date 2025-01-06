@@ -2,17 +2,19 @@
 
 import { useState, useEffect } from 'react';
 import styles from './page.module.css';
-
-type Artist = {
-  name: string;
-  images: { url: string }[];
-  genres: string[];
-  followers: { total: number };
-};
+import { Artist } from './types/artist-types'; 
+import { ArtistCard } from './components/artist-card/artist-card';
+import Search from './ui/search/search';
 
 export default function Home() {
   const [artist, setArtist] = useState<Artist | null>(null);
-  const artistId = '0TnOYISbd1XYRBk9myaseg';
+  const [searchContent, setSearchContent] = useState<string>('');
+  const artistId = '6Ghvu1VvMGScGpOUJBAHNH';
+
+  const handleSearch = (term: string) => {
+    setSearchContent(term);
+    console.log(term);
+  };
 
   useEffect(() => {
     const fetchArtistData = async () => {
@@ -38,11 +40,11 @@ export default function Home() {
   if (!artist) return <p>Loading...</p>;
 
   return (
-    <div className={styles.container}>
-      <h1>{artist.name}</h1>
-      <img src={artist.images[0].url} alt={artist.name} width={200} height={200} />
-      <p>Genres: {artist.genres.join(', ')}</p>
-      <p>Followers: {artist.followers.total.toLocaleString()}</p>
+    <div className={styles.page}>
+      <div>
+        <Search placeholder='Search for an artist...' onSearch={handleSearch}/>
+      </div>
+      <ArtistCard artist={artist}/>
     </div>
   );
 }

@@ -1,0 +1,39 @@
+.container {
+    display: flex;
+    align-items: center;
+    max-width: 400px;
+    margin: 0 auto;
+    border-radius: 50px;
+    background-color: #f4f4f4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    flex-grow: 1;
+    background-color: transparent;
+    font-size: 16px;
+    color: #333;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.input::placeholder {
+    color: #999;
+}
+
+.button {
+    background-color: transparent;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.button:hover {
+    transform: scale(1.1);
+}
