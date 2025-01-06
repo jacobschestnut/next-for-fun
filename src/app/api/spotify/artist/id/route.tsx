@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
     // Return artist data as JSON
     return NextResponse.json(artistData, { status: 200 });
   } catch (error) {
-    console.error('Error in GET /api/spotify/artist:', error);
+    console.error('Error in GET /api/spotify/artist/id:', error);
     return NextResponse.json({ error: 'Something went wrong during the request.' }, { status: 500 });
   }
 }

@@ -18,7 +18,7 @@ export default function Search({ placeholder, onSearch }: SearchProps ) {
         className={styles.input}
         placeholder={placeholder}
         onChange={(e) => {
-          // handleSearch(e.target.value);
+          handleSearch(e.target.value);
         }}
       />
       <button className={styles.button}>
